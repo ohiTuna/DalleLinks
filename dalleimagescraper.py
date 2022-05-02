@@ -91,7 +91,7 @@ def generatemarkdownfile(records, filename, since = datetime.datetime(2000,1,1),
         # probably doesn't cover all cases
         prompt = v[1].description.replace("\n"," ! ").replace("#",".").replace(">",".").replace("-","!")
 
-        imglink = "^([***img***]({}))".format(v[1].imageurl)
+        imglink = "([***img***]({}))".format(v[1].imageurl)
 
         lines.append (f"* {imglink} [{prompt}]({v[1].url})")
         
