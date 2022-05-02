@@ -24,7 +24,6 @@ def get_image_meta(url):
     
     prompt = soup.find('meta', property="og:title")["content"]
     prompt =  prompt.partition("|")[-1].strip() # strip off everything to left of the first "|" which is a generic Dall-E label
-    
     imglink = soup.find('meta', property="og:image")["content"]
     
     return [prompt, imglink]
@@ -69,7 +68,6 @@ def update_cache(records, cacherange, since):
 
 def generatemarkdownfile(records, filename, since = datetime.datetime(2000,1,1), title = "Dall-E 2 Images"):
     # generate a markdown file from records
-    # TODO: future expansion to enable a "from" date
 
     # output in sorted order
     dayforheader = -1   
@@ -87,7 +85,12 @@ def generatemarkdownfile(records, filename, since = datetime.datetime(2000,1,1),
             dayforheader = v[1].datecreated.day
             lines.append(f"### {v[1].datecreated.date()}")
 
-        lines.append (f"* [{v[1].description}]({v[1].url})")
+        # ugly hack to get rid of embedded markup symbols; need to regex or better get a library for this cleanup
+        # probably doesn't cover all cases
+        prompt = v[1].description.replace("\n"," ! ").replace("#",".").replace(">",".").replace("-","!")
+
+        lines.append (f"* [{prompt}]({v[1].url})")
+        
     with open(filename,"w",encoding="utf-8") as f:
         f.write("\n".join(lines))
 
