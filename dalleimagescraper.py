@@ -74,9 +74,7 @@ def generatemarkdownfile(records, filename, since = datetime.datetime(2000,1,1),
     dayforheader = -1   
     lines = []
     lines.append(f"# {title}")
-    count = 0
-
-    firstday = Empty
+    lines.append("---")
 
     for v in sorted(list(records.items()), key=lambda item: item[1].datecreated, reverse=True):
         if (not v[1].valid):
@@ -88,19 +86,14 @@ def generatemarkdownfile(records, filename, since = datetime.datetime(2000,1,1),
         if v[1].datecreated.day != dayforheader:
             dayforheader = v[1].datecreated.day
             lines.append(f"### {v[1].datecreated.date()}")
-            if firstday == Empty:
-                firstday = dayforheader
 
         # ugly hack to get rid of embedded markup symbols; need to regex or better get a library for this cleanup
         # probably doesn't cover all cases
         prompt = v[1].description.replace("\n"," ! ").replace("#",".").replace(">",".").replace("-","!")
-        img = ""
 
-        # generate thumbnails for first day (again, ugly hack)
-        if firstday == v[1].datecreated.day:
-            img = "[<img src=\"{}\" width=\"200\"/>]({})".format(v[1].imageurl, v[1].imageurl)
- 
-        lines.append (f"* {img} [{prompt}]({v[1].url})")
+        imglink = "<sub>[***img***]({})</sub>".format(v[1].imageurl)
+
+        lines.append (f"* {imglink} [{prompt}]({v[1].url})")
         
     with open(filename,"w",encoding="utf-8") as f:
         f.write("\n".join(lines))
